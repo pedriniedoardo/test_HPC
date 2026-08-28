@@ -1,0 +1,20 @@
+# Instructions here: https://snakemake.readthedocs.io/en/stable/executing/cli.html
+executor: slurm
+jobs: 30
+conda-prefix: .snakemake/conda
+rerun-incomplete: true
+keep-going: true
+latency-wait: 60
+cores: 72
+# retries: 3
+
+# conda-base-path: /opt/common/tools/ric.cosr/miniconda3
+conda-base-path: /home/pedrini.edoardo/miniconda3
+
+# No wall time information given. This might or might not work on your cluster. If not, specify the resource runtime in your rule or as a reasonable default via --default-resources.
+# TBD
+#
+default-resources:
+    slurm_account: "ric.cosr"
+    mem_mb: 5000
+    cores: 1

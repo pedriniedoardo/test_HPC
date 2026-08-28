@@ -1,0 +1,36 @@
+# Snakefile of the workflow of scRNAseq_Stanard_COSR_pipeline
+
+# ======================================================================
+# == import libraries ==
+# ======================================================================
+
+from snakemake.utils import min_version
+# min_version("8.25.5")
+import pandas as pd
+import os
+
+# ======================================================================
+# == import config ==
+# ======================================================================
+
+# load the config here because the steps below need some variables available in the config
+configfile: "config/config.yaml"
+# this is needed because the resources for RAM and cpus per rule are defined in the profile
+configfile: "profiles/default/config.v8+.yaml"
+
+# ======================================================================
+# == load rules ==
+# ======================================================================
+
+# load the rules here because the variable SAMPLES needs to be available
+# include: "rules/helper_function.smk"
+include: "rules/test.smk"
+
+# test rule for pixi project
+rule test:
+    '''
+    Test rule to run pixi
+    '''
+    input:
+        rules.testRunPixi.output,
+        rules.testRunR.output

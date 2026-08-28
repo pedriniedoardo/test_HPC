@@ -1,0 +1,9 @@
+# test variables and file
+test_out: "test/test_out.txt" 
+test_outR: "test/test_outR.txt" 
+
+# conda env
+pixi_env: ".pixi/envs/default"
+
+# output directory
+dir_output: "results/"

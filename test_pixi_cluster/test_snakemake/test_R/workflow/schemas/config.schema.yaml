@@ -1,0 +1,73 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: "Snakemake configuration schema for Cell Ranger"
+
+type: object
+
+properties:
+  samples:
+    type: string
+    description: "Path to the samples CSV file"
+
+  units:
+    type: string
+    description: "Path to the units CSV file"
+
+  ref:
+    type: object
+    description: "Reference genome information"
+    properties:
+      species:
+        type: string
+        description: "Species name (e.g., 'mm10' or 'hg38')"
+      release:
+        type: integer
+        description: "Ensembl release number"
+      build:
+        type: string
+        description: "Genome build version"
+    required:
+      - species
+      - release
+      - build
+
+  cellranger:
+    type: object
+    description: "Cell Ranger-specific parameters"
+    properties:
+      version:
+        type: string
+        description: "Cell Ranger version (e.g., '8.0.0')"
+      transcriptome:
+        type: string
+        description: "Path to the Cell Ranger reference transcriptome"
+      chemistry:
+        type: string
+        description: "Sequencing chemistry (e.g., 'auto')"
+      expect_cells:
+        type: integer
+        description: "Expected number of cells"
+      force_cells:
+        type: integer
+        description: "Manually set number of recovered cells"
+    required:
+      - version
+      - transcriptome
+      - chemistry
+
+  params:
+    type: object
+    description: "General pipeline parameters"
+    properties:
+      cellranger-count:
+        type: string
+        description: "Additional parameters for Cell Ranger count"
+    required:
+      - cellranger-count
+
+required:
+  - samples
+  - ref
+  - cellranger
+  - params
+

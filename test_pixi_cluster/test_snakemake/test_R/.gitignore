@@ -1,0 +1,14 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# file
+*.err
+*.out
+*.log
+
+# snakemake folders
+.snakemake/
+
+# results folders
+results/
