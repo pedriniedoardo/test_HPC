@@ -90,7 +90,7 @@ md %>%
 
 # We can view a histogram of softmax probabilities, which reflect the model confidence associated with each cell's annotation:
 ggplot(md, aes(x = final_level_confidence)) +
-  geom_histogram(bins = 20, fill = "skyblue") +
+  geom_histogram(bins = 20) +
   labs(x = "Softmax probability", y = "Count",
        title = "Histogram of Softmax Probabilities") +
   theme_bw()
@@ -128,20 +128,60 @@ p4
 
 # We also postprocess our predictions to provide labels at three consistent levels of granularity for easy handling, marking any cell with an invalid full hierarchical label (based on `full_consistent_hierarchy`) as `False`.
 # These categories provide a consistent level of granularity for each cell, but may differ from the `final_level_label`, either by forcing the model to predict further along the cell type hierarchy than its intial prediction, or by rolling back its prediction to a lower level of granularity.
-p5 <- DimPlot(bmcite_qc, group.by = "azimuth_medium",
-              label.size = 3, label = TRUE, reduction = "azimuth_umap") +
-  NoLegend()
-p5
+bmcite_qc@meta.data$azimuth_broad %>% table()
+p5 <- DimPlot(bmcite_qc, group.by = "azimuth_broad",
+              label.size = 3, label = TRUE, reduction = "azimuth_umap")
 
-p6 <- DimPlot(bmcite_qc, group.by = "azimuth_fine",
+p6 <- DimPlot(bmcite_qc, group.by = "azimuth_medium",
               label.size = 3, label = TRUE, reduction = "azimuth_umap") +
   NoLegend()
-p6
+
+p7 <- DimPlot(bmcite_qc, group.by = "azimuth_fine",
+              label.size = 3, label = TRUE, reduction = "azimuth_umap") +
+  NoLegend()
+
+p5+p6+p7
 
 # To remove the number of labels displayed, we can filter labels with less than a certain number of cells using `PrepLabel`.
-# Here, we filter labels with less than 20 cells per label. This can be useful to filter outliers, especially as Pan-human Azimuth does not perform smoothing of single-cell labels by cluster. Therefore, a single outlier annotation for one cell will still display the outlier label on a visualization, and the `PrepLabel` function can help with this."
-bmcite_qc <- PrepLabel(bmcite_qc, "azimuth_fine",
-                       "azimuth_fine_filtered", cutoff = 20)
+# Here, we filter labels with less than 20 cells per label. This can be useful to filter outliers, especially as Pan-human Azimuth does not perform smoothing of single-cell labels by cluster. Therefore, a single outlier annotation for one cell will still display the outlier label on a visualization, and the `PrepLabel` function can help with this.
+bmcite_qc <- PrepLabel(bmcite_qc,
+                       label_id = "azimuth_fine",
+                       newid = "azimuth_fine_filtered",
+                       cutid = "Other",
+                       cutoff = 20)
+
+# see the structure of the output
+bmcite_qc@meta.data %>%
+  tibble() %>%
+  select(azimuth_fine, azimuth_fine_filtered) %>%
+  filter(azimuth_fine != azimuth_fine_filtered)
+
+# check the levels in azimuth_fine
+bmcite_qc@meta.data %>%
+  group_by(azimuth_fine) %>%
+  summarise(n = n()) %>%
+  arrange(n)
+
+# check the ones with less than 20 cells
+bmcite_qc@meta.data %>%
+  group_by(azimuth_fine) %>%
+  summarise(n = n()) %>%
+  filter(n < 20) %>%
+  arrange(n)
+
+# the new column do not have annotation with less than 20 cells
+bmcite_qc@meta.data %>%
+  group_by(azimuth_fine_filtered) %>%
+  summarise(n = n()) %>%
+  filter(n < 20) %>%
+  arrange(n)
+
+# the new anntations
+bmcite_qc@meta.data %>%
+  group_by(azimuth_fine_filtered) %>%
+  summarise(n = n()) %>%
+  arrange(n)
+
 p7 <- DimPlot(bmcite_qc, group.by = "azimuth_fine_filtered",
               label.size = 3, label = TRUE, reduction = "azimuth_umap") +
   NoLegend()
@@ -150,14 +190,32 @@ p7
 # ---- Visualize differentially expressed features ----------------------------
 # The `make_azimuth_QC_heatmaps` function allows you to easily explore the quality of predicted labels by creating expression heatmaps by predicted cell type, with optional parameters for improved visualization.
 # Plots are saved by `azimuth_broad` categories by default, with the exception of immune cell types grouped separately by lymphoid or myeloid/erythroid subpopulations.
-plots <- make_azimuth_QC_heatmaps(bmcite_qc)
+table(bmcite_qc@meta.data$azimuth_broad)
+
+# object: Seurat object containing the metadata with Azimuth annotations
+# final_name: Column name in the metadata for the final Azimuth annotations (default 'azimuth_fine')
+# level1_name: Column name in the metadata for the broad Azimuth categories (default 'azimuth_broad')
+# full_name: Column name in the metadata for the full hierarchical labels (default 'full_hierarchical_labels')
+# min.final.group: Minimum number of cells required in a final annotation group to be included in the heatmap (default 10)
+# max.ids.per.plot: Maximum number of final annotation groups to include in a single heatmap (default 15)
+
+plots <- make_azimuth_QC_heatmaps(
+  bmcite_qc,
+  final_name = "azimuth_fine",
+  level1_name = "azimuth_broad",
+  full_name = "full_hierarchical_labels",
+  min.final.group = 10,
+  max.ids.per.plot = 15)
+
 length(plots)
 
 p8 <- plots[["Immune_Lymphoid cell_1"]]
-p8
-
 p9 <- plots[["Immune_Myeloid cell_1"]]
+p10 <- plots[["Immune_Myeloid cell_2"]]
+
+p8
 p9
+p10
 
 # ---- More information --------------------------------------------------------
 # For detailed options and usage of the `AzimuthAPI` functions, see the AzimuthAPI function reference."
