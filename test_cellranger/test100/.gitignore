@@ -1,0 +1,18 @@
+# file
+*.log
+*.out
+*.err
+.Rhistory
+.RData
+.Ruserdata
+token.txt
+
+
+# folder
+data/
+out/
+.Rproj.user/
+test_pbmc_token/
+test_run/
+
+.Rproj.user

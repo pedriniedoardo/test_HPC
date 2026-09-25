@@ -1,0 +1,16 @@
+# file
+*.log
+*.out
+*.err
+.Rhistory
+.RData
+.Ruserdata
+
+
+# folder
+data/
+out/
+.Rproj.user/
+test901/
+
+.Rproj.user
