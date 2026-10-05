@@ -19,11 +19,12 @@ options(future.globals.maxSize = 1000 * 1024^2)
 # parameters --------------------------------------------------------------
 # cellranger runs to process: "viral" (host+EBV reference) and "host" (host-only reference)
 runs <- c("viral", "host")
+# runs <- c("viral")
 
 # same sample as in scr/01_preprocess_sample.R
 # id_sample <- "connect_5k_pbmc_NGSC3_ch1_gex_1"
-# id_sample <- "GSM4796271_LCL_777_B958"
-id_sample <- "GSM3596322_GM12878-GM18502_MIXTURE"
+id_sample <- "GSM4796271_LCL_777_B958"
+# id_sample <- "GSM3596322_GM12878-GM18502_MIXTURE"
 
 # fixed-threshold filters (open by default: nothing is removed), used for both runs
 nCount_RNA_low <- 0
@@ -61,36 +62,35 @@ label <- paste("nCount-",nCount_RNA_low,"_",nCount_RNA_high,"|",
 
 # processing --------------------------------------------------------------
 # filter one run of the sample, call doublets, reprocess and save it
-
 walk(runs, function(run) {
-  rds <- file.path("out/object", paste0("01_", run, "_", id_sample, "_obj_preQC.rds"))
-  out_id_object <- file.path("out/object", paste0("02_", run, "_", id_sample, "_obj_postQC.rds"))
-  out_id_meta <- file.path("out/table", paste0("02_", run, "_", id_sample, "_meta_postQC.tsv"))
-
+  rds <- file.path("out/object", paste0("01_", run, "_", id_sample, "_obj_preQC_testStandardPipeline.rds"))
+  out_id_object <- file.path("out/object", paste0("02_", run, "_", id_sample, "_obj_postQC_testStandardPipeline.rds"))
+  out_id_meta <- file.path("out/table", paste0("02_", run, "_", id_sample, "_meta_postQC_testStandardPipeline.rds"))
+  
   message("run: ", run)
   message("input rds: ", rds)
   message("output rds: ", out_id_object)
   message("output meta: ", out_id_meta)
-
+  
   if (!file.exists(rds)) {
     stop(paste("Input not found:", rds, "- run scr/01_preprocess_sample.R first"))
   }
-
+  
   # standard processing ---------------------------------------------------
   scobj <- readRDS(rds)
-
+  
   # add the filtering label
   scobj$label <- label
-
+  
   # add the filtering variable based on the fixed threshold
   scobj$discard_threshold <- scobj@meta.data %>%
     mutate(test = nCount_RNA < nCount_RNA_low | nCount_RNA > nCount_RNA_high |
-                  nFeature_RNA < nFeature_RNA_low | nFeature_RNA > nFeature_RNA_high |
-                  percent.ribo < percent.ribo_low | percent.ribo > percent.ribo_high |
-                  percent.mt < percent.mt_low | percent.mt > percent.mt_high |
-                  percent.globin < percent.globin_low | percent.globin > percent.globin_high) %>%
+             nFeature_RNA < nFeature_RNA_low | nFeature_RNA > nFeature_RNA_high |
+             percent.ribo < percent.ribo_low | percent.ribo > percent.ribo_high |
+             percent.mt < percent.mt_low | percent.mt > percent.mt_high |
+             percent.globin < percent.globin_low | percent.globin > percent.globin_high) %>%
     pull(test)
-
+  
   # preprocess the dataset before the doublet identification as recommended in:
   # https://bioconductor.org/packages/release/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html
   # 1.5.11
@@ -105,17 +105,17 @@ walk(runs, function(run) {
     FindClusters() %>%
     # do I run the UMAP ? I do not need it for the doublet identification, but can be useful in case someone wants to explore an individual sample
     RunUMAP(dims = 1:30)
-
+  
   # run scDblFinder after filtering the low coverage cells
   sce_scobj <- scDblFinder(GetAssayData(scobj, layer="counts"), clusters=Idents(scobj))
-
+  
   # port the resulting scores back to the Seurat object:
   scobj$scDblFinder.score <- sce_scobj$scDblFinder.score
   scobj$scDblFinder.class <- sce_scobj$scDblFinder.class
-
+  
   # cross-tabulate doublet calls against the threshold-based discard flag
   print(table(scobj$scDblFinder.class,scobj$discard_threshold))
-
+  
   # perform the filtering based on the fixed threshold defined, and on doublets if requested
   if(remove_doublets){
     # perform the filtering based on the fixed threshold defined and for the doublets
@@ -125,7 +125,7 @@ walk(runs, function(run) {
     scobj_filter <- subset(scobj, subset = discard_threshold == 0)
   }
   message("cells kept: ", ncol(scobj_filter), " of ", ncol(scobj))
-
+  
   # preprocess data after filtering
   scobj_filter <- scobj_filter %>%
     NormalizeData() %>%
@@ -135,7 +135,7 @@ walk(runs, function(run) {
     FindNeighbors(dims = 1:30) %>%
     FindClusters() %>%
     RunUMAP(dims = 1:30)
-
+  
   # save output -----------------------------------------------------------
   saveRDS(scobj_filter,out_id_object)
   write_tsv(scobj_filter@meta.data %>% rownames_to_column("barcodes"),out_id_meta)

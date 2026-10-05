@@ -18,8 +18,8 @@ options(Seurat.object.assay.version = "v5")
 # parameters --------------------------------------------------------------
 # samples to plot (same ids as in scr/01 and scr/02)
 # id_samples <- c("connect_5k_pbmc_NGSC3_ch1_gex_1")
-# id_samples <- c("GSM4796271_LCL_777_B958")
-id_samples <- c("GSM3596322_GM12878-GM18502_MIXTURE")
+# id_samples <- c("GSM3596322_GM12878-GM18502_MIXTURE")
+id_samples <- c("GSM4796271_LCL_777_B958")
 
 # runs to plot: "viral" (host+EBV reference) and/or "host" (host-only reference)
 runs <- c("viral", "host")
@@ -62,7 +62,7 @@ walk(id_samples, function(id_sample) {
   message("sample id: ", id_sample)
 
   walk(runs, function(run) tryCatch({
-    rds <- file.path("out/object", paste0("02_", run, "_", id_sample, "_obj_postQC.rds"))
+    rds <- file.path("out/object", paste0("02_", run, "_", id_sample, "_obj_postQC_testStandardPipeline.rds"))
     if (!file.exists(rds)) {
       stop(paste("Input not found:", rds, "- run scr/01 and scr/02 with run", run))
     }
@@ -85,7 +85,7 @@ walk(id_samples, function(id_sample) {
                                  list_plot_viral), nrow = 1) +
       plot_annotation(title = title)
     ggsave(plot = p_umap_viral,
-           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad.pdf")),
+           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad_testStandardPipeline.pdf")),
            width = 15, height = 4.5)
 
     # UMAP by cluster and viral load alternative 01
@@ -106,7 +106,7 @@ walk(id_samples, function(id_sample) {
                                  list_plot_viral_alt01), nrow = 1) +
       plot_annotation(title = title)
     ggsave(plot = p_umap_viral_alt01,
-           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad_alt01.pdf")),
+           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad_alt01_testStandardPipeline.pdf")),
            width = 15, height = 4.5)
 
     # UMAP by cluster and viral load alternative 02
@@ -120,7 +120,7 @@ walk(id_samples, function(id_sample) {
                                          list_plot_viral_alt02), nrow = 1) +
         plot_annotation(title = title)
       ggsave(plot = p_umap_viral_alt02,
-             file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad_alt02.pdf")),
+             file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_clusters_viralLoad_alt02_testStandardPipeline.pdf")),
              width = 15, height = 4.5)
     }, error = function(e) message("alt02 density plot skipped for ", id_sample, " | ", run, ": ", e$message))
 
@@ -133,7 +133,7 @@ walk(id_samples, function(id_sample) {
     p_umap_markers <- wrap_plots(list_plot, ncol = n_col) +
       plot_annotation(title = title)
     ggsave(plot = p_umap_markers,
-           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_markers.pdf")),
+           file.path("out/plot", paste0("03_", run, "_", id_sample, "_UMAP_markers_testStandardPipeline.pdf")),
            width = 3.5 * n_col, height = 3 * ceiling(length(list_plot) / n_col), limitsize = F)
 
     # dotplot of the markers per cluster
@@ -146,7 +146,7 @@ walk(id_samples, function(id_sample) {
       labs(title = title) +
       theme(strip.text = element_text(angle = 90))
     ggsave(plot = p_dot,
-           file.path("out/plot", paste0("03_", run, "_", id_sample, "_DotPlot_markers.pdf")),
+           file.path("out/plot", paste0("03_", run, "_", id_sample, "_DotPlot_markers_testStandardPipeline.pdf")),
            width = 4 + 0.3 * length(unlist(list_markers_run)), height = 6, limitsize = F)
   }, error = function(e) message("FAILED ", id_sample, " | ", run, ": ", conditionMessage(e))))
 })
