@@ -26,6 +26,7 @@ COMBINED_REF=$REF_DIR/$COMBINED_NAME      # final reference passed to cellranger
 # submit_counts.sh submits one 02/02b job per subfolder.
 SAMPLES_DIRS=(
     # $PROJ/sample_dataset/GSE158275/grouped     # 3 EBV+ lymphoblastoid cell lines
-    $PROJ/sample_dataset/GSE126321/grouped     # 3 EBV+ samples
+    # $PROJ/sample_dataset/GSE126321/grouped     # 3 EBV+ samples
+    $PROJ/sample_dataset/GSE189141/grouped     # 16 nuclei EBV+ samples
     # $PROJ/sample_dataset/connect_5k_pbmc       # 10x 5k PBMC (test100 run), negative control
 )

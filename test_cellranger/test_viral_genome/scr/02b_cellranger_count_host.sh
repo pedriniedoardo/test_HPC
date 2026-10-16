@@ -23,7 +23,7 @@ SAMPLE=$(basename "$FASTQ_DIR")   # folder is named like the FASTQ prefix
 set --   # `. activate` would otherwise receive this script's arguments and fail
 
 . /home/pedrini.edoardo/miniconda3/bin/activate;
-conda activate env_cellranger100;
+conda activate env_cellranger101;
 
 cd "$PROJ"
 mkdir -p "$PROJ/count_host"   # cellranger creates the run folder but not its parent

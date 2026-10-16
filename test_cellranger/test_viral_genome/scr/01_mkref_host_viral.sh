@@ -16,7 +16,7 @@ set -euo pipefail
 source /beegfs/scratch/ric.cosr/pedrini.edoardo/test/test_cellranger/test_viral_genome/scr/config.sh
 
 . /home/pedrini.edoardo/miniconda3/bin/activate;
-conda activate env_cellranger100;
+conda activate env_cellranger101;
 
 [[ -s "$REF_DIR/viral.fa" && -s "$REF_DIR/viral.gtf" ]] || { echo "Run scr/00_prepare_viral_inputs.sh first" >&2; exit 1; }
 [[ "$(cat "$REF_DIR/viral.source.txt" 2>/dev/null)" == "$(printf '%s\n' "$VIRAL_FASTA" "$VIRAL_GTF")" ]] \
