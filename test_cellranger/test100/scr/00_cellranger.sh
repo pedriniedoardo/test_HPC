@@ -11,7 +11,7 @@
 #SBATCH --output="cellranger_test_pbmc_token.out"
 
 . /home/pedrini.edoardo/miniconda3/bin/activate;
-conda activate env_cellranger100;
+conda activate env_cellranger101;
 
 cellranger count --id=test_pbmc_token \
         --transcriptome=/beegfs/scratch/ric.absinta/ric.absinta/reference/refdata-gex-GRCh38-2024-A \
