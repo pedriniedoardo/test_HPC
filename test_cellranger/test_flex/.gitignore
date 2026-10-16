@@ -1,0 +1,20 @@
+# input data (large, re-downloadable: see data/README); keep the README
+data/*
+!data/README
+
+# everything produced by the pipeline
+analysis/
+
+# slurm logs
+*.out
+*.err
+
+# pixi env (keep pixi.toml and pixi.lock)
+.pixi/
+
+# cellranger run folders / martian leftovers
+__*/
+*.mro
+# pixi environments
+.pixi/*
+!.pixi/config.toml

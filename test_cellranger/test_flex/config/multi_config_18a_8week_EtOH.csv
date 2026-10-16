@@ -1,0 +1,12 @@
+[gene-expression]
+reference,/beegfs/scratch/ric.absinta/ric.absinta/reference/refdata-gex-GRCh38-2020-A
+probe-set,/beegfs/scratch/ric.absinta/ric.absinta/reference/probe_sets/Chromium_Human_Transcriptome_Probe_Set_v1.0.1_GRCh38-2020-A.csv
+create-bam,false
+
+[libraries]
+fastq_id,fastqs,lanes,feature_types
+18a_8week_EtOH,/beegfs/scratch/ric.cosr/pedrini.edoardo/test/test_cellranger/test_flex/analysis/fastq/18a_8week_EtOH,any,Gene Expression
+
+[samples]
+sample_id,probe_barcode_ids
+18a_8week_EtOH,BC011|BC012|BC013
