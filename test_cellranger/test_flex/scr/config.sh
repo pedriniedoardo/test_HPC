@@ -7,9 +7,11 @@ PROJ=/beegfs/scratch/ric.cosr/pedrini.edoardo/test/test_cellranger/test_flex
 # pixi env (pixi.toml in $PROJ) providing bamtofastq + samtools, activated by 01 with `pixi shell-hook`
 PIXI=/home/pedrini.edoardo/.pixi/bin/pixi
 
-# ---- input BAM (SRR34678188, see data/README) ----
-BAM=$PROJ/data/18a_8week_EtOH_sample_alignments.bam
-ID=18a_8week_EtOH            # run id / FASTQ prefix / sample_id (no spaces)
+# ---- input BAM (see data/README) ----
+# Sample to process: override with `sbatch --export=ALL,ID=<sample> scr/01_bamtofastq_flex.sh`.
+# Samples: 18a_8week_EtOH (SRR34678188, default), 18a_24hr_EtOH (SRR34678190), 18a_24hr_LPC (SRR34678189), 18a_8week_LPC (SRR34678187)
+ID=${ID:-18a_24hr_EtOH}     # run id / FASTQ prefix / sample_id (no spaces)
+BAM=$PROJ/data/${ID}_sample_alignments.bam
 
 # ---- outputs ----
 FASTQ_DIR=$PROJ/analysis/fastq/$ID          # flat folder of <ID>_S1_L00N_R{1,2}_001.fastq.gz, input of cellranger multi
